@@ -1,0 +1,294 @@
+/* Custom Glassmorphism & Theme Styles */
+:root {
+    --bg-main: #080b12;
+    --bg-sec: #111827;
+    --bg-card: #151b28;
+    --accent: #6366f1;
+    --accent-sec: #8b5cf6;
+    --success: #22c55e;
+    --danger: #ef4444;
+    --chess-light: #f0d9b5;
+    --chess-dark: #b58863;
+}
+
+body {
+    background-color: var(--bg-main);
+    min-height: 100vh;
+    overflow-x: hidden;
+}
+
+.glass-nav {
+    background: rgba(8, 11, 18, 0.78);
+    backdrop-filter: blur(16px);
+    -webkit-backdrop-filter: blur(16px);
+}
+
+.glass-card {
+    background: rgba(21, 27, 40, 0.75);
+    backdrop-filter: blur(14px);
+    -webkit-backdrop-filter: blur(14px);
+    box-shadow: 0 10px 30px -10px rgba(0, 0, 0, 0.6);
+}
+
+/* Navigation Buttons */
+.nav-btn {
+    padding: 0.5rem 1rem;
+    border-radius: 0.75rem;
+    font-size: 0.875rem;
+    font-weight: 600;
+    color: #94a3b8;
+    transition: all 0.25s ease;
+}
+
+.nav-btn:hover {
+    color: #f8fafc;
+    background: rgba(255, 255, 255, 0.06);
+}
+
+.nav-btn.active {
+    color: #ffffff;
+    background: linear-gradient(135deg, rgba(99, 102, 241, 0.25), rgba(139, 92, 246, 0.25));
+    border: 1px solid rgba(99, 102, 241, 0.4);
+    box-shadow: 0 0 15px rgba(99, 102, 241, 0.2);
+}
+
+/* Setup Modal Buttons */
+.mode-option-btn {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    padding: 1rem;
+    border-radius: 1rem;
+    background: rgba(255, 255, 255, 0.03);
+    border: 1px solid rgba(255, 255, 255, 0.1);
+    transition: all 0.2s ease;
+}
+
+.mode-option-btn:hover {
+    background: rgba(255, 255, 255, 0.07);
+}
+
+.mode-option-btn.active {
+    background: rgba(99, 102, 241, 0.15);
+    border-color: var(--accent);
+    box-shadow: 0 0 20px rgba(99, 102, 241, 0.25);
+}
+
+.diff-option-btn {
+    padding: 0.6rem;
+    border-radius: 0.75rem;
+    font-size: 0.8rem;
+    font-weight: 700;
+    background: rgba(255, 255, 255, 0.04);
+    border: 1px solid rgba(255, 255, 255, 0.1);
+    color: #94a3b8;
+    transition: all 0.2s ease;
+}
+
+.diff-option-btn.active {
+    background: var(--accent);
+    color: #ffffff;
+    border-color: var(--accent);
+    box-shadow: 0 4px 14px rgba(99, 102, 241, 0.4);
+}
+
+/* GAME BOARD RESPONSIVE SIZING */
+.game-board {
+    width: 540px;
+    height: 540px;
+    user-select: none;
+}
+
+@media (max-width: 640px) {
+    .game-board {
+        width: 88vw;
+        height: 88vw;
+    }
+}
+
+.board-cell {
+    aspect-ratio: 1 / 1;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    position: relative;
+    cursor: pointer;
+    transition: background-color 0.15s ease;
+}
+
+/* Chess Board Colors */
+.cell-light {
+    background-color: var(--chess-light);
+}
+
+.cell-dark {
+    background-color: var(--chess-dark);
+}
+
+/* Checkers Board Dark Theme Contrast */
+.checkers-board .cell-light {
+    background-color: #cbd5e1;
+}
+
+.checkers-board .cell-dark {
+    background-color: #1e293b;
+}
+
+/* Coordinate Labels */
+.coord-rank {
+    position: absolute;
+    top: 2px;
+    left: 4px;
+    font-size: 10px;
+    font-weight: 700;
+    opacity: 0.75;
+    pointer-events: none;
+}
+
+.coord-file {
+    position: absolute;
+    bottom: 1px;
+    right: 4px;
+    font-size: 10px;
+    font-weight: 700;
+    opacity: 0.75;
+    pointer-events: none;
+}
+
+.cell-light .coord-rank, .cell-light .coord-file { color: #7c583a; }
+.cell-dark .coord-rank, .cell-dark .coord-file { color: #f0d9b5; }
+
+/* Board State Highlights */
+.cell-selected {
+    background-color: rgba(99, 102, 241, 0.65) !important;
+    box-shadow: inset 0 0 18px rgba(99, 102, 241, 0.9);
+}
+
+.cell-last-move {
+    background-color: rgba(250, 204, 21, 0.42) !important;
+}
+
+.cell-check {
+    background: radial-gradient(circle, rgba(239, 68, 68, 0.9) 0%, rgba(185, 28, 28, 0.75) 100%) !important;
+    box-shadow: inset 0 0 20px #ef4444;
+    animation: pulseCheck 1.2s infinite;
+}
+
+@keyframes pulseCheck {
+    0%, 100% { filter: brightness(1); }
+    50% { filter: brightness(1.25); }
+}
+
+/* Legal Move Indicators */
+.legal-dot::after {
+    content: '';
+    width: 28%;
+    height: 28%;
+    border-radius: 50%;
+    background: rgba(99, 102, 241, 0.85);
+    box-shadow: 0 0 10px rgba(99, 102, 241, 0.8);
+    pointer-events: none;
+    transition: transform 0.15s ease;
+}
+
+.board-cell:hover .legal-dot::after {
+    transform: scale(1.25);
+}
+
+.legal-capture::after {
+    content: '';
+    position: absolute;
+    inset: 6%;
+    border-radius: 50%;
+    border: 4px solid rgba(239, 68, 68, 0.85);
+    box-shadow: 0 0 12px rgba(239, 68, 68, 0.7);
+    pointer-events: none;
+}
+
+/* CHESS PIECES STYLING */
+.chess-piece {
+    font-size: clamp(2rem, 5.2vw, 3.1rem);
+    line-height: 1;
+    transition: transform 0.18s cubic-bezier(0.34, 1.56, 0.64, 1), filter 0.2s ease;
+    z-index: 5;
+    pointer-events: none;
+}
+
+.board-cell:hover .chess-piece {
+    transform: translateY(-3px) scale(1.07);
+}
+
+.piece-white {
+    color: #ffffff;
+    text-shadow: 0 2px 4px rgba(0, 0, 0, 0.75), 0 0 1px #000;
+    filter: drop-shadow(0 4px 6px rgba(0,0,0,0.4));
+}
+
+.piece-black {
+    color: #111827;
+    text-shadow: 0 1px 2px rgba(255, 255, 255, 0.45);
+    filter: drop-shadow(0 4px 6px rgba(0,0,0,0.5));
+}
+
+.cell-selected .chess-piece {
+    transform: scale(1.12);
+    filter: drop-shadow(0 0 12px rgba(99, 102, 241, 0.95));
+}
+
+/* CHECKERS PIECES STYLING */
+.checker-piece {
+    width: 76%;
+    height: 76%;
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: clamp(1.1rem, 2.5vw, 1.5rem);
+    transition: transform 0.2s cubic-bezier(0.34, 1.56, 0.64, 1), box-shadow 0.2s ease;
+    position: relative;
+    z-index: 5;
+    pointer-events: none;
+}
+
+.checker-red {
+    background: radial-gradient(circle at 30% 30%, #f87171, #dc2626 65%, #7f1d1d 100%);
+    border: 3px solid #fca5a5;
+    box-shadow: 0 6px 12px rgba(0, 0, 0, 0.6), inset 0 2px 4px rgba(255,255,255,0.4);
+}
+
+.checker-black {
+    background: radial-gradient(circle at 30% 30%, #475569, #1e293b 65%, #020617 100%);
+    border: 3px solid #94a3b8;
+    box-shadow: 0 6px 12px rgba(0, 0, 0, 0.7), inset 0 2px 4px rgba(255,255,255,0.2);
+}
+
+.checker-piece::before {
+    content: '';
+    position: absolute;
+    inset: 14%;
+    border-radius: 50%;
+    border: 1.5px dashed rgba(255, 255, 255, 0.25);
+}
+
+.cell-selected .checker-piece {
+    transform: scale(1.12);
+    box-shadow: 0 0 20px rgba(99, 102, 241, 0.95);
+}
+
+/* Active Turn Player Card Glow */
+.player-card.active-turn {
+    border-color: rgba(99, 102, 241, 0.7);
+    box-shadow: 0 0 25px rgba(99, 102, 241, 0.18);
+}
+
+/* Custom Scrollbar */
+.custom-scrollbar::-webkit-scrollbar {
+    width: 6px;
+}
+.custom-scrollbar::-webkit-scrollbar-track {
+    background: rgba(15, 23, 42, 0.5);
+}
+.custom-scrollbar::-webkit-scrollbar-thumb {
+    background: rgba(99, 102, 241, 0.4);
+    border-radius: 9999px;
+}

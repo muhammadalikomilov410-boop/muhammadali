@@ -1,0 +1,513 @@
+<!DOCTYPE html>
+<html lang="uz" class="dark">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>♟ GAME ARENA — Master The Board</title>
+    
+    <!-- Google Fonts -->
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&family=JetBrains+Mono:wght@400;600&display=swap" rel="stylesheet">
+    
+    <!-- Bootstrap 5 CSS -->
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" rel="stylesheet">
+    
+    <!-- Tailwind CSS -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script>
+        tailwind.config = {
+            darkMode: 'class',
+            theme: {
+                extend: {
+                    colors: {
+                        bgMain: '#080b12',
+                        bgSec: '#111827',
+                        bgCard: '#151b28',
+                        accent: '#6366f1',
+                        accentSec: '#8b5cf6',
+                        success: '#22c55e',
+                        danger: '#ef4444',
+                        textMain: '#f8fafc',
+                        textSec: '#94a3b8'
+                    },
+                    fontFamily: {
+                        sans: ['Inter', 'sans-serif'],
+                        mono: ['JetBrains Mono', 'monospace'],
+                    }
+                }
+            }
+        }
+    </script>
+
+    <!-- FontAwesome -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.2/css/all.min.css">
+    
+    <!-- Morris.js CSS -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/morris.js/0.5.1/morris.css">
+    
+    <!-- Custom CSS -->
+    <link rel="stylesheet" href="style.css">
+</head>
+<body class="bg-bgMain text-textMain font-sans antialiased selection:bg-accent selection:text-white">
+
+    <!-- Ambient Background Glow -->
+    <div class="fixed inset-0 overflow-hidden pointer-events-none z-0">
+        <div class="absolute -top-40 -left-40 w-96 h-96 bg-accent/20 rounded-full blur-[120px]"></div>
+        <div class="absolute top-1/2 -right-40 w-96 h-96 bg-accentSec/20 rounded-full blur-[120px]"></div>
+    </div>
+
+    <!-- Navigation Bar -->
+    <nav class="sticky top-0 z-40 glass-nav border-b border-white/10">
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+            <div class="flex items-center justify-between h-16">
+                <div class="flex items-center gap-3 cursor-pointer" onclick="app.navigate('home')">
+                    <div class="w-10 h-10 rounded-xl bg-gradient-to-br from-accent to-accentSec flex items-center justify-center text-2xl shadow-lg shadow-accent/30">
+                        ♟
+                    </div>
+                    <span class="font-extrabold text-xl tracking-wider bg-clip-text text-transparent bg-gradient-to-r from-white to-slate-400">
+                        GAME ARENA
+                    </span>
+                </div>
+                
+                <div class="hidden md:flex items-center space-x-2">
+                    <button onclick="app.navigate('home')" class="nav-btn active" data-page="home">
+                        <i class="fa-solid fa-house mr-2"></i>Home
+                    </button>
+                    <button onclick="app.openSetupModal('chess')" class="nav-btn" data-page="chess">
+                        <i class="fa-solid fa-chess-knight mr-2"></i>Chess
+                    </button>
+                    <button onclick="app.openSetupModal('checkers')" class="nav-btn" data-page="checkers">
+                        <i class="fa-solid fa-circle-dot mr-2"></i>Checkers
+                    </button>
+                    <button onclick="app.navigate('stats')" class="nav-btn" data-page="stats">
+                        <i class="fa-solid fa-chart-line mr-2"></i>Statistics
+                    </button>
+                    <button onclick="app.navigate('settings')" class="nav-btn" data-page="settings">
+                        <i class="fa-solid fa-gear mr-2"></i>Settings
+                    </button>
+                </div>
+
+                <!-- Mobile menu button -->
+                <div class="md:hidden">
+                    <button id="mobile-menu-btn" class="text-slate-300 hover:text-white p-2">
+                        <i class="fa-solid fa-bars text-xl"></i>
+                    </button>
+                </div>
+            </div>
+        </div>
+        <!-- Mobile Menu -->
+        <div id="mobile-menu" class="hidden md:hidden glass-card border-b border-white/10 px-4 pt-2 pb-4 space-y-1">
+            <button onclick="app.navigate('home')" class="block w-full text-left px-3 py-2 rounded-lg text-base font-medium hover:bg-white/10">Home</button>
+            <button onclick="app.openSetupModal('chess')" class="block w-full text-left px-3 py-2 rounded-lg text-base font-medium hover:bg-white/10">Chess</button>
+            <button onclick="app.openSetupModal('checkers')" class="block w-full text-left px-3 py-2 rounded-lg text-base font-medium hover:bg-white/10">Checkers</button>
+            <button onclick="app.navigate('stats')" class="block w-full text-left px-3 py-2 rounded-lg text-base font-medium hover:bg-white/10">Statistics</button>
+            <button onclick="app.navigate('settings')" class="block w-full text-left px-3 py-2 rounded-lg text-base font-medium hover:bg-white/10">Settings</button>
+        </div>
+    </nav>
+
+    <!-- MAIN CONTENT CONTAINER -->
+    <main class="relative z-10 max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
+
+        <!-- 1. HOME PAGE -->
+        <section id="page-home" class="page-section active">
+            <!-- Hero Section -->
+            <div class="text-center max-w-3xl mx-auto mt-6 mb-14">
+                <div class="inline-flex items-center gap-2 px-4 py-1.5 rounded-full bg-accent/10 border border-accent/30 text-accent text-sm font-semibold mb-6">
+                    <span class="w-2 h-2 rounded-full bg-accent animate-ping"></span>
+                    NEXT-GEN BOARD GAMING PLATFORM
+                </div>
+                <h1 class="text-5xl md:text-7xl font-black tracking-tight mb-6 bg-clip-text text-transparent bg-gradient-to-r from-white via-slate-200 to-accent">
+                    MASTER THE BOARD
+                </h1>
+                <p class="text-lg md:text-xl text-textSec leading-relaxed">
+                    Play chess and checkers against intelligent opponents or challenge your friends.
+                </p>
+                
+                <!-- Continue Saved Game Banner (Hidden if no saved game) -->
+                <div id="continue-banner" class="hidden mt-8">
+                    <button onclick="app.continueSavedGame()" class="inline-flex items-center gap-3 px-6 py-3 rounded-xl bg-success/20 border border-success/40 text-success hover:bg-success hover:text-white transition-all duration-300 font-semibold shadow-lg shadow-success/20">
+                        <i class="fa-solid fa-play"></i>
+                        <span id="continue-text">Continue Last Match</span>
+                    </button>
+                </div>
+            </div>
+
+            <!-- Two Large Game Cards -->
+            <div class="grid grid-cols-1 md:grid-cols-2 gap-8 max-w-5xl mx-auto">
+                <!-- Chess Card -->
+                <div class="game-hero-card group relative rounded-3xl p-8 bg-bgCard/80 border border-white/10 backdrop-blur-xl overflow-hidden transition-all duration-500 hover:-translate-y-2 hover:border-accent/60 hover:shadow-2xl hover:shadow-accent/20">
+                    <div class="absolute -right-10 -bottom-10 text-[180px] opacity-5 group-hover:opacity-15 group-hover:scale-110 transition-all duration-500 select-none">
+                        ♞
+                    </div>
+                    <div class="relative z-10">
+                        <div class="w-16 h-16 rounded-2xl bg-gradient-to-br from-accent to-accentSec flex items-center justify-center text-4xl mb-6 shadow-lg shadow-accent/30 group-hover:scale-110 transition-transform duration-300">
+                            ♟
+                        </div>
+                        <div class="flex items-center gap-3 mb-2">
+                            <h2 class="text-3xl font-bold tracking-wide">CHESS</h2>
+                            <span class="px-2.5 py-0.5 text-xs font-semibold rounded-md bg-accent/20 text-accent border border-accent/30">AI ENGINE</span>
+                        </div>
+                        <p class="text-textSec text-lg mb-8">Classic strategic chess with full ruleset, castling, en-passant, and Minimax Alpha-Beta AI.</p>
+                        
+                        <div class="flex items-center justify-between text-sm text-textSec mb-8 border-t border-white/10 pt-4">
+                            <span><i class="fa-solid fa-brain text-accent mr-1.5"></i> 4 AI Levels</span>
+                            <span><i class="fa-solid fa-users text-accentSec mr-1.5"></i> 1v1 & Bot</span>
+                            <span><i class="fa-solid fa-clock text-success mr-1.5"></i> Timed</span>
+                        </div>
+
+                        <button onclick="app.openSetupModal('chess')" class="w-full py-4 rounded-xl font-bold tracking-wider text-white bg-gradient-to-r from-accent to-accentSec hover:opacity-95 shadow-lg shadow-accent/30 transition-all duration-300 flex items-center justify-center gap-2 group-hover:gap-4">
+                            <span>PLAY CHESS</span>
+                            <i class="fa-solid fa-arrow-right"></i>
+                        </button>
+                    </div>
+                </div>
+
+                <!-- Checkers Card -->
+                <div class="game-hero-card group relative rounded-3xl p-8 bg-bgCard/80 border border-white/10 backdrop-blur-xl overflow-hidden transition-all duration-500 hover:-translate-y-2 hover:border-accentSec/60 hover:shadow-2xl hover:shadow-accentSec/20">
+                    <div class="absolute -right-10 -bottom-10 text-[180px] opacity-5 group-hover:opacity-15 group-hover:scale-110 transition-all duration-500 select-none">
+                        ⛃
+                    </div>
+                    <div class="relative z-10">
+                        <div class="w-16 h-16 rounded-2xl bg-gradient-to-br from-rose-500 to-accentSec flex items-center justify-center text-4xl mb-6 shadow-lg shadow-rose-500/30 group-hover:scale-110 transition-transform duration-300">
+                            ⚫
+                        </div>
+                        <div class="flex items-center gap-3 mb-2">
+                            <h2 class="text-3xl font-bold tracking-wide">CHECKERS</h2>
+                            <span class="px-2.5 py-0.5 text-xs font-semibold rounded-md bg-accentSec/20 text-accentSec border border-accentSec/30">TACTICAL</span>
+                        </div>
+                        <p class="text-textSec text-lg mb-8">Fast and tactical checkers featuring mandatory captures, multi-jumps, and King promotions.</p>
+                        
+                        <div class="flex items-center justify-between text-sm text-textSec mb-8 border-t border-white/10 pt-4">
+                            <span><i class="fa-solid fa-crown text-amber-400 mr-1.5"></i> King Logic</span>
+                            <span><i class="fa-solid fa-bolt text-rose-400 mr-1.5"></i> Multi-Jump</span>
+                            <span><i class="fa-solid fa-robot text-accent mr-1.5"></i> Smart Bot</span>
+                        </div>
+
+                        <button onclick="app.openSetupModal('checkers')" class="w-full py-4 rounded-xl font-bold tracking-wider text-white bg-gradient-to-r from-accentSec to-rose-600 hover:opacity-95 shadow-lg shadow-accentSec/30 transition-all duration-300 flex items-center justify-center gap-2 group-hover:gap-4">
+                            <span>PLAY CHECKERS</span>
+                            <i class="fa-solid fa-arrow-right"></i>
+                        </button>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- 2. GAME ARENA PAGE -->
+        <section id="page-arena" class="page-section hidden">
+            <!-- Top Arena Bar -->
+            <div class="flex flex-wrap items-center justify-between gap-4 mb-6 glass-card p-4 rounded-2xl border border-white/10">
+                <div class="flex items-center gap-3">
+                    <button onclick="app.navigate('home')" class="px-3 py-2 rounded-xl bg-white/5 hover:bg-white/10 text-textSec hover:text-white transition">
+                        <i class="fa-solid fa-arrow-left mr-1"></i> Back
+                    </button>
+                    <div>
+                        <h2 id="arena-title" class="text-xl font-bold flex items-center gap-2">
+                            ♟ CHESS ARENA
+                        </h2>
+                        <span id="arena-subtitle" class="text-xs text-textSec">Human vs Bot • Medium</span>
+                    </div>
+                </div>
+
+                <!-- Game Status Pill -->
+                <div id="game-status-banner" class="px-5 py-2 rounded-full bg-accent/20 border border-accent/40 text-white font-semibold text-sm flex items-center gap-2 shadow-inner">
+                    <span class="w-2.5 h-2.5 rounded-full bg-success animate-pulse"></span>
+                    <span id="game-status-text">White's Turn</span>
+                </div>
+
+                <!-- Action Controls -->
+                <div class="flex items-center gap-2">
+                    <button onclick="app.openSetupModal(app.currentGame)" class="px-4 py-2 rounded-xl bg-accent hover:bg-accent/90 text-white text-sm font-semibold transition shadow-lg shadow-accent/25">
+                        <i class="fa-solid fa-plus mr-1.5"></i>New Game
+                    </button>
+                    <button onclick="app.restartCurrentGame()" class="px-4 py-2 rounded-xl bg-white/10 hover:bg-white/15 text-white text-sm font-semibold transition">
+                        <i class="fa-solid fa-rotate-right mr-1.5"></i>Restart
+                    </button>
+                </div>
+            </div>
+
+            <!-- Main Board + Sidebar Grid -->
+            <div class="grid grid-cols-1 lg:grid-cols-12 gap-8 items-start">
+                
+                <!-- Center Board Area (7 cols on lg) -->
+                <div class="lg:col-span-7 flex flex-col items-center justify-center relative">
+                    
+                    <!-- Bot Thinking Overlay Indicator -->
+                    <div id="bot-thinking" class="hidden absolute -top-3 z-30 px-4 py-1.5 rounded-full bg-bgCard/95 border border-accent text-accent text-xs font-bold tracking-widest uppercase shadow-xl shadow-accent/30 flex items-center gap-2 backdrop-blur-md">
+                        <i class="fa-solid fa-circle-notch fa-spin"></i>
+                        <span>BOT IS THINKING...</span>
+                    </div>
+
+                    <!-- Board Wrapper with Neon Glow -->
+                    <div class="board-container relative p-3 sm:p-4 rounded-2xl bg-bgCard/90 border border-white/15 shadow-[0_0_50px_rgba(99,102,241,0.2)]">
+                        <div id="game-board" class="game-board grid grid-cols-8 rounded-xl overflow-hidden border-2 border-slate-700/80">
+                            <!-- 64 Squares generated dynamically via JS -->
+                        </div>
+                    </div>
+
+                    <!-- Captured Pieces Bar -->
+                    <div class="w-full max-w-[560px] mt-4 flex justify-between items-center px-4 py-2.5 rounded-xl bg-bgCard/60 border border-white/5 text-sm">
+                        <div class="flex items-center gap-2">
+                            <span class="text-textSec text-xs uppercase font-bold">Captured by P1:</span>
+                            <div id="p1-captured" class="flex flex-wrap gap-1 text-lg"></div>
+                        </div>
+                        <div class="flex items-center gap-2">
+                            <span class="text-textSec text-xs uppercase font-bold">Captured by P2:</span>
+                            <div id="p2-captured" class="flex flex-wrap gap-1 text-lg"></div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Game Sidebar (5 cols on lg) -->
+                <div class="lg:col-span-5 space-y-5">
+                    
+                    <!-- Opponent / Bot Card -->
+                    <div id="card-player-2" class="player-card glass-card p-4 rounded-2xl border border-white/10 transition-all duration-300">
+                        <div class="flex items-center justify-between">
+                            <div class="flex items-center gap-3.5">
+                                <div class="w-12 h-12 rounded-xl bg-gradient-to-br from-slate-700 to-slate-900 border border-white/10 flex items-center justify-center text-2xl shadow-inner" id="p2-avatar">
+                                    🤖
+                                </div>
+                                <div>
+                                    <div class="flex items-center gap-2">
+                                        <h3 id="p2-name" class="font-bold text-base">AI Grandmaster</h3>
+                                        <span id="p2-badge" class="px-2 py-0.5 text-[11px] font-bold rounded bg-accentSec/20 text-accentSec border border-accentSec/30 uppercase">Medium</span>
+                                    </div>
+                                    <p class="text-xs text-textSec mt-0.5">Score: <span id="p2-score" class="text-white font-mono font-bold">0</span></p>
+                                </div>
+                            </div>
+                            <div class="text-right">
+                                <div id="p2-timer" class="font-mono text-2xl font-bold px-3 py-1.5 rounded-xl bg-bgMain/80 border border-white/10 text-slate-300">
+                                    10:00
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- VS Divider -->
+                    <div class="flex items-center justify-center gap-3 my-1">
+                        <div class="h-px bg-white/10 flex-1"></div>
+                        <span class="text-xs font-black tracking-widest text-accent bg-accent/10 px-3 py-1 rounded-full border border-accent/20">VS</span>
+                        <div class="h-px bg-white/10 flex-1"></div>
+                    </div>
+
+                    <!-- Player 1 Card -->
+                    <div id="card-player-1" class="player-card active-turn glass-card p-4 rounded-2xl border border-accent/50 transition-all duration-300">
+                        <div class="flex items-center justify-between">
+                            <div class="flex items-center gap-3.5">
+                                <div class="w-12 h-12 rounded-xl bg-gradient-to-br from-accent to-accentSec flex items-center justify-center text-2xl shadow-lg shadow-accent/20">
+                                    😎
+                                </div>
+                                <div>
+                                    <div class="flex items-center gap-2">
+                                        <h3 id="p1-name" class="font-bold text-base">Player 1</h3>
+                                        <span class="px-2 py-0.5 text-[11px] font-bold rounded bg-success/20 text-success border border-success/30">RATING 1450</span>
+                                    </div>
+                                    <p class="text-xs text-textSec mt-0.5">Score: <span id="p1-score" class="text-white font-mono font-bold">0</span></p>
+                                </div>
+                            </div>
+                            <div class="text-right">
+                                <div id="p1-timer" class="font-mono text-2xl font-bold px-3 py-1.5 rounded-xl bg-bgMain/80 border border-accent/40 text-white">
+                                    10:00
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Move History Panel -->
+                    <div class="glass-card rounded-2xl border border-white/10 overflow-hidden flex flex-col h-[310px]">
+                        <div class="px-4 py-3 bg-white/5 border-b border-white/10 flex items-center justify-between">
+                            <span class="text-xs font-bold tracking-wider uppercase text-textSec">
+                                <i class="fa-solid fa-list-ol text-accent mr-2"></i>Move History
+                            </span>
+                            <span id="move-count-badge" class="text-xs font-mono text-textSec">0 moves</span>
+                        </div>
+                        <div id="move-history-list" class="p-4 overflow-y-auto flex-1 font-mono text-sm space-y-1.5 custom-scrollbar">
+                            <div class="text-textSec text-center italic text-xs mt-10">Make your first move to begin...</div>
+                        </div>
+                    </div>
+
+                </div>
+            </div>
+        </section>
+
+        <!-- 3. STATISTICS PAGE (Morris.js) -->
+        <section id="page-stats" class="page-section hidden">
+            <div class="max-w-5xl mx-auto">
+                <div class="flex items-center justify-between mb-8">
+                    <div>
+                        <h2 class="text-3xl font-bold">Player Statistics & Analytics</h2>
+                        <p class="text-textSec text-sm mt-1">Performance metrics across Chess and Checkers matches</p>
+                    </div>
+                    <button onclick="app.resetStats()" class="px-4 py-2 rounded-xl bg-danger/20 border border-danger/40 text-danger hover:bg-danger hover:text-white text-sm font-semibold transition">
+                        <i class="fa-solid fa-trash mr-1.5"></i>Reset Data
+                    </button>
+                </div>
+
+                <!-- Summary KPI Cards -->
+                <div class="grid grid-cols-2 md:grid-cols-4 gap-4 mb-8">
+                    <div class="glass-card p-5 rounded-2xl border border-white/10">
+                        <p class="text-textSec text-xs uppercase font-bold">Total Games</p>
+                        <h3 id="stat-total" class="text-3xl font-black mt-2 text-white">0</h3>
+                    </div>
+                    <div class="glass-card p-5 rounded-2xl border border-success/20">
+                        <p class="text-success text-xs uppercase font-bold">Victories</p>
+                        <h3 id="stat-wins" class="text-3xl font-black mt-2 text-success">0</h3>
+                    </div>
+                    <div class="glass-card p-5 rounded-2xl border border-danger/20">
+                        <p class="text-danger text-xs uppercase font-bold">Defeats</p>
+                        <h3 id="stat-losses" class="text-3xl font-black mt-2 text-danger">0</h3>
+                    </div>
+                    <div class="glass-card p-5 rounded-2xl border border-accent/20">
+                        <p class="text-accent text-xs uppercase font-bold">Win Rate</p>
+                        <h3 id="stat-winrate" class="text-3xl font-black mt-2 text-accent">0%</h3>
+                    </div>
+                </div>
+
+                <!-- Morris.js Charts -->
+                <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+                    <div class="glass-card p-6 rounded-2xl border border-white/10">
+                        <h4 class="font-bold text-base mb-4 text-slate-200">Match Outcomes Distribution</h4>
+                        <div id="morris-donut-chart" class="h-64"></div>
+                    </div>
+                    <div class="glass-card p-6 rounded-2xl border border-white/10">
+                        <h4 class="font-bold text-base mb-4 text-slate-200">Games Played by Discipline</h4>
+                        <div id="morris-bar-chart" class="h-64"></div>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- 4. SETTINGS PAGE -->
+        <section id="page-settings" class="page-section hidden">
+            <div class="max-w-2xl mx-auto glass-card p-8 rounded-3xl border border-white/10">
+                <h2 class="text-2xl font-bold mb-6"><i class="fa-solid fa-sliders text-accent mr-2"></i>Arena Settings</h2>
+                
+                <div class="space-y-6">
+                    <div class="flex items-center justify-between pb-4 border-b border-white/10">
+                        <div>
+                            <h4 class="font-semibold">Sound Effects</h4>
+                            <p class="text-xs text-textSec">Play synthesized audio cues on move, capture, and check</p>
+                        </div>
+                        <input type="checkbox" id="setting-sound" checked class="w-5 h-5 accent-accent cursor-pointer">
+                    </div>
+
+                    <div class="flex items-center justify-between pb-4 border-b border-white/10">
+                        <div>
+                            <h4 class="font-semibold">Highlight Legal Moves</h4>
+                            <p class="text-xs text-textSec">Show visual indicators on valid destination squares</p>
+                        </div>
+                        <input type="checkbox" id="setting-hints" checked class="w-5 h-5 accent-accent cursor-pointer">
+                    </div>
+
+                    <div class="flex items-center justify-between">
+                        <div>
+                            <h4 class="font-semibold">Match Timer (Minutes)</h4>
+                            <p class="text-xs text-textSec">Default clock duration per player</p>
+                        </div>
+                        <select id="setting-timer" class="bg-bgMain border border-white/15 rounded-xl px-4 py-2 text-sm text-white focus:outline-none focus:border-accent">
+                            <option value="300">5 Minutes (Blitz)</option>
+                            <option value="600" selected>10 Minutes (Rapid)</option>
+                            <option value="900">15 Minutes (Classical)</option>
+                        </select>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+    </main>
+
+    <!-- GAME SETUP MODAL -->
+    <div class="modal fade" id="setupModal" tabindex="-1" aria-hidden="true">
+        <div class="modal-dialog modal-dialog-centered">
+            <div class="modal-content bg-bgCard border border-white/15 text-textMain rounded-3xl shadow-2xl backdrop-blur-xl">
+                <div class="modal-header border-b border-white/10 px-6 py-4">
+                    <h5 class="modal-title font-bold text-xl flex items-center gap-2" id="setupModalTitle">
+                        ♟ Setup Chess Match
+                    </h5>
+                    <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal" aria-label="Close"></button>
+                </div>
+                <div class="modal-body p-6 space-y-6">
+                    <!-- Game Mode Selection -->
+                    <div>
+                        <label class="block text-xs font-bold uppercase tracking-wider text-textSec mb-3">Select Game Mode</label>
+                        <div class="grid grid-cols-2 gap-3">
+                            <button type="button" class="mode-option-btn active" data-mode="bot">
+                                <i class="fa-solid fa-robot text-xl mb-1 text-accent"></i>
+                                <span class="font-bold text-sm">Human vs Bot</span>
+                                <span class="text-[11px] text-textSec">Challenge AI Engine</span>
+                            </button>
+                            <button type="button" class="mode-option-btn" data-mode="pvp">
+                                <i class="fa-solid fa-user-group text-xl mb-1 text-accentSec"></i>
+                                <span class="font-bold text-sm">Human vs Human</span>
+                                <span class="text-[11px] text-textSec">Local 2 Players</span>
+                            </button>
+                        </div>
+                    </div>
+
+                    <!-- Difficulty Selection -->
+                    <div id="difficulty-selector-group">
+                        <label class="block text-xs font-bold uppercase tracking-wider text-textSec mb-3">AI Difficulty Level</label>
+                        <div class="grid grid-cols-2 sm:grid-cols-4 gap-2.5">
+                            <button type="button" class="diff-option-btn" data-diff="easy">Easy</button>
+                            <button type="button" class="diff-option-btn active" data-diff="medium">Medium</button>
+                            <button type="button" class="diff-option-btn" data-diff="hard">Hard</button>
+                            <button type="button" class="diff-option-btn" data-diff="expert">Expert</button>
+                        </div>
+                        <p id="diff-desc" class="text-xs text-textSec mt-2.5 italic">
+                            Medium: Minimax search depth 2 with positional evaluation.
+                        </p>
+                    </div>
+                </div>
+                <div class="modal-footer border-t border-white/10 px-6 py-4">
+                    <button type="button" class="px-5 py-2.5 rounded-xl bg-white/5 hover:bg-white/10 text-sm font-semibold" data-bs-dismiss="modal">Cancel</button>
+                    <button type="button" onclick="app.startNewGame()" class="px-6 py-2.5 rounded-xl bg-gradient-to-r from-accent to-accentSec text-white text-sm font-bold shadow-lg shadow-accent/30 hover:opacity-95">
+                        START MATCH <i class="fa-solid fa-play ml-1.5"></i>
+                    </button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- PAWN PROMOTION MODAL (CHESS) -->
+    <div class="modal fade" id="promotionModal" data-bs-backdrop="static" tabindex="-1" aria-hidden="true">
+        <div class="modal-dialog modal-dialog-centered modal-sm">
+            <div class="modal-content bg-bgCard border border-accent/40 text-textMain rounded-3xl shadow-2xl text-center p-6">
+                <h5 class="font-bold text-lg mb-2">Pawn Promotion</h5>
+                <p class="text-xs text-textSec mb-4">Choose a piece to promote your pawn:</p>
+                <div class="grid grid-cols-4 gap-2" id="promotion-choices">
+                    <!-- Injected via JS -->
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- GAME OVER / RESULT MODAL -->
+    <div class="modal fade" id="gameOverModal" tabindex="-1" aria-hidden="true">
+        <div class="modal-dialog modal-dialog-centered">
+            <div class="modal-content bg-bgCard border border-white/15 text-textMain rounded-3xl shadow-2xl text-center p-8 relative overflow-hidden">
+                <div class="absolute inset-0 bg-gradient-to-b from-accent/10 to-transparent pointer-events-none"></div>
+                <div id="gameover-icon" class="text-6xl mb-4 animate-bounce">🏆</div>
+                <h2 id="gameover-title" class="text-3xl font-black tracking-wide mb-2">CHECKMATE!</h2>
+                <p id="gameover-subtitle" class="text-textSec text-base mb-6">White wins the match by checkmate.</p>
+                
+                <div class="flex justify-center gap-3">
+                    <button type="button" class="px-5 py-3 rounded-xl bg-white/10 hover:bg-white/15 font-semibold text-sm transition" data-bs-dismiss="modal" onclick="app.navigate('home')">
+                        Main Menu
+                    </button>
+                    <button type="button" class="px-6 py-3 rounded-xl bg-gradient-to-r from-accent to-accentSec text-white font-bold text-sm shadow-lg shadow-accent/30 transition" data-bs-dismiss="modal" onclick="app.restartCurrentGame()">
+                        Play Again
+                    </button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Scripts: jQuery, Bootstrap, Raphael & Morris.js -->
+    <script src="https://code.jquery.com/jquery-3.7.1.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/raphael/2.3.0/raphael.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/morris.js/0.5.1/morris.min.js"></script>
+    
+    <!-- Main Game Engine -->
+    <script src="script.js"></script>
+</body>
+</html>
